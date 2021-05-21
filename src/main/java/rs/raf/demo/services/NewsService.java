@@ -12,8 +12,16 @@ public class NewsService {
     private NewsRepository newsRepository;
 
 
-    public List<News> allNews() {
-        return this.newsRepository.allNews();
+    public List<News> allNewNews(int pageNum) {
+        return this.newsRepository.allNewNews(pageNum);
+    }
+
+    public List<News> allTopVisitedNews() {
+        return this.newsRepository.allTopVisitedNews();
+    }
+
+    public List<News> allNewsByCategory(String category) {
+        return this.newsRepository.allNewsByCategory(category);
     }
 
     public News findNews(Integer id) {

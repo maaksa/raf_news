@@ -14,7 +14,7 @@ import java.util.List;
 public class MySqlNewsRepository extends MySqlAbstractRepository implements NewsRepository {
 
     @Override
-    public List<News> allNews() {
+    public List<News> allNewNews(int pageNum) {
         List<News> newsList = new ArrayList<>();
 
         Connection connection = null;
@@ -27,10 +27,101 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         PreparedStatement preparedStatement = null;
 
         try {
+            int currPage = (pageNum - 1) * 1;
+            connection = this.newConnection();
+
+            // statement = connection.createStatement();
+            preparedStatement = connection.prepareStatement("select * from news order by createdAt desc limit ?,1");
+            preparedStatement.setInt(1, currPage);
+            resultSet = preparedStatement.executeQuery();
+            //resultSet = statement.executeQuery("select * from news order by createdAt desc limit ?,2"); //prvi kec je koliko ce da preskoci, drugi kec koliko ce da prikaze posle preskakanja
+
+
+            //NEWS
+            while (resultSet.next()) {
+                //get news
+                int id = resultSet.getInt("id");
+                String title = resultSet.getString("title");
+                String content = resultSet.getString("content");
+                Date createdAt = resultSet.getDate("createdAt");
+                int visits_num = resultSet.getInt("visits_num");
+
+                News news = new News(id, title, content, createdAt);
+                news.setVisits_num(visits_num);
+
+                //get author from news
+                preparedStatement = connection.prepareStatement("select * from user where email = ?");
+                preparedStatement.setString(1, resultSet.getString("author"));
+                resultSetAuthor = preparedStatement.executeQuery();
+
+                //AUTHOR
+                while (resultSetAuthor.next()) {
+                    String email = resultSetAuthor.getString("email");
+                    String name = resultSetAuthor.getString("name");
+                    String surname = resultSetAuthor.getString("surname");
+                    int role = resultSetAuthor.getInt("role");
+                    int status = resultSetAuthor.getInt("status");
+                    String password = resultSetAuthor.getString("password");
+
+                    User author = new User(email, name, surname, role, status, password);
+
+                    synchronized (this) {
+                        news.setAuthor(author);
+                    }
+                }
+
+                //get categoryName from news
+                preparedStatement = connection.prepareStatement("select * from category where name = ?");
+                preparedStatement.setString(1, resultSet.getString("category_name"));
+                resultSetCategory = preparedStatement.executeQuery();
+
+                //CATEGORY
+                while (resultSetCategory.next()) {
+                    String name = resultSetCategory.getString("name");
+                    String description = resultSetCategory.getString("description");
+
+                    Category category = new Category(name, description);
+
+                    synchronized (this) {
+                        news.setCategory(category);
+                    }
+                }
+
+                newsList.add(news);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeResultSet(resultSetAuthor);
+            this.closeResultSet(resultSetCategory);
+            this.closeConnection(connection);
+        }
+
+        return newsList;
+    }
+
+    @Override
+    public List<News> allTopVisitedNews() {
+        List<News> newsList = new ArrayList<>();
+
+        Connection connection = null;
+        Statement statement = null;
+
+        ResultSet resultSet = null;
+        ResultSet resultSetAuthor = null;
+        ResultSet resultSetCategory = null;
+
+        PreparedStatement preparedStatement = null;
+
+        try {
+            int currPage = 1;
             connection = this.newConnection();
 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from news");
+            resultSet = statement.executeQuery("select * from news order by visits_num desc");
 
             //NEWS
             while (resultSet.next()) {
@@ -90,6 +181,96 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         } finally {
             this.closeStatement(statement);
             this.closeResultSet(resultSet);
+            this.closeResultSet(resultSetAuthor);
+            this.closeResultSet(resultSetCategory);
+            this.closeConnection(connection);
+        }
+
+        return newsList;
+    }
+
+    @Override
+    public List<News> allNewsByCategory(String category) {
+        List<News> newsList = new ArrayList<>();
+
+        Connection connection = null;
+        Statement statement = null;
+
+        ResultSet resultSet = null;
+        ResultSet resultSetAuthor = null;
+        ResultSet resultSetCategory = null;
+
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = this.newConnection();
+
+            //statement = connection.createStatement();
+            //resultSet = statement.executeQuery("select * from news where category_name like ? order by createdAt desc");
+            preparedStatement = connection.prepareStatement("select * from news where category_name like ? order by createdAt desc");
+            preparedStatement.setString(1, category);
+            resultSet = preparedStatement.executeQuery();
+
+            //NEWS
+            while (resultSet.next()) {
+                //get news
+                int id = resultSet.getInt("id");
+                String title = resultSet.getString("title");
+                String content = resultSet.getString("content");
+                Date createdAt = resultSet.getDate("createdAt");
+                int visits_num = resultSet.getInt("visits_num");
+
+                News news = new News(id, title, content, createdAt);
+                news.setVisits_num(visits_num);
+
+                //get author from news
+                preparedStatement = connection.prepareStatement("select * from user where email = ?");
+                preparedStatement.setString(1, resultSet.getString("author"));
+                resultSetAuthor = preparedStatement.executeQuery();
+
+                //AUTHOR
+                while (resultSetAuthor.next()) {
+                    String email = resultSetAuthor.getString("email");
+                    String name = resultSetAuthor.getString("name");
+                    String surname = resultSetAuthor.getString("surname");
+                    int role = resultSetAuthor.getInt("role");
+                    int status = resultSetAuthor.getInt("status");
+                    String password = resultSetAuthor.getString("password");
+
+                    User author = new User(email, name, surname, role, status, password);
+
+                    synchronized (this) {
+                        news.setAuthor(author);
+                    }
+                }
+
+                //get categoryName from news
+                preparedStatement = connection.prepareStatement("select * from category where name = ?");
+                preparedStatement.setString(1, resultSet.getString("category_name"));
+                resultSetCategory = preparedStatement.executeQuery();
+
+                //CATEGORY
+                while (resultSetCategory.next()) {
+                    String name = resultSetCategory.getString("name");
+                    String description = resultSetCategory.getString("description");
+
+                    Category categoryToSave = new Category(name, description);
+
+                    synchronized (this) {
+                        news.setCategory(categoryToSave);
+                    }
+                }
+
+                newsList.add(news);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeResultSet(resultSetAuthor);
+            this.closeResultSet(resultSetCategory);
             this.closeConnection(connection);
         }
 

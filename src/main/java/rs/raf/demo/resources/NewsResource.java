@@ -16,16 +16,31 @@ public class NewsResource {
     private NewsService newsService;
 
     @GET
+    @Path("/page-num/{pageNum}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<News> all() {
-        return this.newsService.allNews();
+    public List<News> allNewNews(@PathParam("pageNum") int pageNum) {
+        return this.newsService.allNewNews(pageNum);
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/top-visited")
     @Produces(MediaType.APPLICATION_JSON)
-    public News find(@PathParam("id") Integer id) {
-        return this.newsService.findNews(id);
+    public List<News> allTopVisitedNews() {
+        return this.newsService.allTopVisitedNews();
     }
+
+    @GET
+    @Path("/category/{category}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<News> allTopVisitedNews(@PathParam("category") String category) {
+        return this.newsService.allNewsByCategory(category);
+    }
+
+//    @GET
+//    @Path("/{id}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public News find(@PathParam("id") Integer id) {
+//        return this.newsService.findNews(id);
+//    }
 
 }

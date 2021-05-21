@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface NewsRepository {
 
-    public List<News> allNews();
+    public List<News> allNewNews(int pageNum);
+
+    public List<News> allTopVisitedNews();
+
+    public List<News> allNewsByCategory(String category);
 
     public News findNews(Integer id);
 
