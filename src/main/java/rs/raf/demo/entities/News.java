@@ -27,15 +27,13 @@ public class News {
     public News() {
     }
 
-    public News(String title, String content) {
-        this();
+    public News(Integer id, String title, String content, Date createdAt, User author, Category category) {
+        this.id = id;
         this.title = title;
         this.content = content;
-    }
-
-    public News(Integer id, String title, String content) {
-        this(title, content);
-        this.id = id;
+        this.createdAt = createdAt;
+        this.author = author;
+        this.category = category;
     }
 
     public Integer getId() {
@@ -60,5 +58,41 @@ public class News {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public int getVisits_num() {
+        return visits_num;
+    }
+
+    public void inc_visits() {
+        this.setVisits_num(this.getVisits_num() + 1);
+    }
+
+    public void setVisits_num(int visits_num) {
+        this.visits_num = visits_num;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }
