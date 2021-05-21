@@ -27,13 +27,11 @@ public class News {
     public News() {
     }
 
-    public News(Integer id, String title, String content, Date createdAt, User author, Category category) {
+    public News(Integer id, String title, String content, Date createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
-        this.author = author;
-        this.category = category;
     }
 
     public Integer getId() {
