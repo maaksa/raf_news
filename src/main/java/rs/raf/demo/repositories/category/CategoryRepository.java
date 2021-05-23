@@ -10,6 +10,8 @@ public interface CategoryRepository {
 
     public Category addCategory(Category category);
 
-    public void deleteCategory(String name);
+    public String deleteCategory(String name);
+
+    public Category updateCategory(Category category, String name);
 
 }

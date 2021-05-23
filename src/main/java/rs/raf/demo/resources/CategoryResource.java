@@ -22,16 +22,15 @@ public class CategoryResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Category addCategory(Category category){
+    public Category addCategory(Category category) {
         return this.categoryService.addCategory(category);
     }
 
     @DELETE
     @Path("/{name}")
-    public void deleteCategory(@PathParam("name") String name) {
-        this.categoryService.deleteCategory(name);
+    @Produces(MediaType.APPLICATION_JSON)
+    public String deleteCategory(@PathParam("name") String name) {
+        return this.categoryService.deleteCategory(name);
     }
-
-
 
 }

@@ -83,8 +83,9 @@ public class MySqlCategoryRepository extends MySqlAbstractRepository implements 
         return category;
     }
 
+    //todo Brisanje kategorije nije dozvoljeno sve dok postoji makar i jedna vest u toj kategoriji.
     @Override
-    public void deleteCategory(String name) {
+    public String deleteCategory(String name) {
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -98,13 +99,21 @@ public class MySqlCategoryRepository extends MySqlAbstractRepository implements 
 
             preparedStatement.close();
             connection.close();
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         } finally {
             this.closeStatement(preparedStatement);
             this.closeConnection(connection);
         }
+
+        return name;
+    }
+
+    @Override
+    public Category updateCategory(Category category, String name) {
+        q
     }
 
 }
