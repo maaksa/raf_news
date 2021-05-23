@@ -34,4 +34,11 @@ public class UserResource {
         return this.userService.updateUser(user, email);
     }
 
+    @PUT
+    @Path("/status/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void changeStatus(@PathParam("email") String email) {
+        this.userService.changeStatus(email);
+    }
+
 }

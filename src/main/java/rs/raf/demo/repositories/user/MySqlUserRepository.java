@@ -125,5 +125,53 @@ public class MySqlUserRepository extends MySqlAbstractRepository implements User
         return user;
     }
 
+    @Override
+    public void changeStatus(String email) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("SELECT * FROM user where email = ?");
+            preparedStatement.setString(1, email);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int status = resultSet.getInt("status");
+
+                if (status == 1) {
+                    status = 0;
+                    preparedStatement = connection.prepareStatement("update user set status = ? where email = ?");
+                    preparedStatement.setInt(1, status);
+                    preparedStatement.setString(2, email);
+
+                    preparedStatement.executeUpdate();
+                } else {
+                    status = 1;
+                    preparedStatement = connection.prepareStatement("update user set status = ? where email = ?");
+                    preparedStatement.setInt(1, status);
+                    preparedStatement.setString(2, email);
+
+                    preparedStatement.executeUpdate();
+                }
+            }
+
+            preparedStatement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (resultSet != null) {
+                this.closeResultSet(resultSet);
+            }
+            this.closeStatement(preparedStatement);
+            this.closeConnection(connection);
+        }
+
+    }
+
 
 }

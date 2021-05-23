@@ -23,4 +23,8 @@ public class UserService {
         return this.userRepository.updateUser(user, email);
     }
 
+    public void changeStatus(String email){
+        this.userRepository.changeStatus(email);
+    }
+
 }
