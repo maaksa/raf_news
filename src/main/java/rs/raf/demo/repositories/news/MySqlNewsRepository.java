@@ -455,6 +455,10 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
+        if (comment.getAuthor() == null || comment.getContent() == null) {
+            return null;
+        }
+
         try {
             connection = this.newConnection();
 
