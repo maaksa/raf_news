@@ -113,7 +113,42 @@ public class MySqlCategoryRepository extends MySqlAbstractRepository implements 
 
     @Override
     public Category updateCategory(Category category, String name) {
-        q
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.newConnection();
+
+            if (!(name.equals(category.getName()))) {
+                preparedStatement = connection.prepareStatement("select * from category where name = ? ");
+                preparedStatement.setString(1, category.getName());
+                resultSet = preparedStatement.executeQuery();
+            }
+
+            if (resultSet == null || !resultSet.next() || name.equals(category.getName())) {
+                preparedStatement = connection.prepareStatement("update category set name = ?, description = ? where name = ?");
+                preparedStatement.setString(1, category.getName());
+                preparedStatement.setString(2, category.getDescription());
+                preparedStatement.setString(3, name);
+                preparedStatement.executeUpdate();
+
+                preparedStatement.close();
+                connection.close();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (resultSet != null) {
+                this.closeResultSet(resultSet);
+            }
+            this.closeStatement(preparedStatement);
+            this.closeConnection(connection);
+        }
+
+        return category;
     }
 
 }

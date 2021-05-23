@@ -33,4 +33,11 @@ public class CategoryResource {
         return this.categoryService.deleteCategory(name);
     }
 
+    @PUT
+    @Path("/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Category updateCategory(Category category, @PathParam("name") String name) {
+        return this.categoryService.updateCategory(category, name);
+    }
+
 }

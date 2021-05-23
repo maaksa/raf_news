@@ -19,9 +19,12 @@ public class CategoryService {
         return this.categoryRepository.addCategory(category);
     }
 
-    public String deleteCategory(String name){
-       return this.categoryRepository.deleteCategory(name);
+    public String deleteCategory(String name) {
+        return this.categoryRepository.deleteCategory(name);
     }
 
+    public Category updateCategory(Category category, String name) {
+        return this.categoryRepository.updateCategory(category, name);
+    }
 
 }
