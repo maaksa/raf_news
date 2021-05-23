@@ -14,5 +14,14 @@ public class CategoryService {
     public List<Category> allCategory() {
         return this.categoryRepository.allCategory();
     }
-    
+
+    public Category addCategory(Category category) {
+        return this.categoryRepository.addCategory(category);
+    }
+
+    public void deleteCategory(String name){
+        this.categoryRepository.deleteCategory(name);
+    }
+
+
 }

@@ -20,5 +20,18 @@ public class CategoryResource {
         return this.categoryService.allCategory();
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Category addCategory(Category category){
+        return this.categoryService.addCategory(category);
+    }
+
+    @DELETE
+    @Path("/{name}")
+    public void deleteCategory(@PathParam("name") String name) {
+        this.categoryService.deleteCategory(name);
+    }
+
+
 
 }

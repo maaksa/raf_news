@@ -5,9 +5,7 @@ import rs.raf.demo.entities.News;
 import rs.raf.demo.entities.User;
 import rs.raf.demo.repositories.MySqlAbstractRepository;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +44,67 @@ public class MySqlCategoryRepository extends MySqlAbstractRepository implements 
         }
 
         return categoryList;
+    }
+
+    @Override
+    public Category addCategory(Category category) {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.newConnection();
+
+            String[] generatedColumns = {"name"};
+
+            preparedStatement = connection.prepareStatement("select * from category where name = ? ");
+            preparedStatement.setString(1, category.getName());
+            resultSet = preparedStatement.executeQuery();
+
+            if (!resultSet.next()) {
+                preparedStatement = connection.prepareStatement("INSERT INTO category (name, description) VALUES (?,?)", generatedColumns);
+                preparedStatement.setString(1, category.getName());
+                preparedStatement.setString(2, category.getDescription());
+
+                preparedStatement.executeUpdate();
+                resultSet = preparedStatement.getGeneratedKeys();
+            } else
+                category = null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return category;
+    }
+
+    @Override
+    public void deleteCategory(String name) {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("DELETE FROM category where name = ?");
+            preparedStatement.setString(1, name);
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            connection.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeConnection(connection);
+        }
     }
 
 }
