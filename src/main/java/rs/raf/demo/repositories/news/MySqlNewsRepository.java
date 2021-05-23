@@ -367,6 +367,7 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         ResultSet resultSet = null;
         ResultSet resultSetComments = null;
         ResultSet resultSetTags = null;
+        ResultSet resultSetAuthor = null;
 
         News news = null;
 
@@ -403,6 +404,26 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
 
                     synchronized (this) {
                         news.getComments().add(comment);
+                    }
+                }
+
+                preparedStatement = connection.prepareStatement("select * from user where email = ?");
+                preparedStatement.setString(1, resultSet.getString("author"));
+                resultSetAuthor = preparedStatement.executeQuery();
+
+                //AUTHOR
+                while (resultSetAuthor.next()) {
+                    String email = resultSetAuthor.getString("email");
+                    String name = resultSetAuthor.getString("name");
+                    String surname = resultSetAuthor.getString("surname");
+                    int role = resultSetAuthor.getInt("role");
+                    int status = resultSetAuthor.getInt("status");
+                    String password = resultSetAuthor.getString("password");
+
+                    User author = new User(email, name, surname, role, status, password);
+
+                    synchronized (this) {
+                        news.setAuthor(author);
                     }
                 }
 
@@ -444,6 +465,7 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
             this.closeStatement(preparedStatement);
             this.closeResultSet(resultSet);
             this.closeConnection(connection);
+            this.closeResultSet(resultSetAuthor);
         }
 
         return news;
@@ -486,4 +508,82 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         }
         return comment;
     }
+
+    @Override
+    public News addNews(News news) {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        ArrayList<Integer> tagIds = new ArrayList<>();
+        int newsId = 0;
+
+        try {
+            connection = this.newConnection();
+
+            String[] generatedColumns = {"id"};
+
+            //dodajemo nove tagove
+            for (Tag tag : news.getTags()) {
+                preparedStatement = connection.prepareStatement("select * from tag where word = ? ",  Statement.RETURN_GENERATED_KEYS);
+                preparedStatement.setString(1, tag.getWord());
+                resultSet = preparedStatement.executeQuery();
+
+                if (!resultSet.next()) {
+                    preparedStatement = connection.prepareStatement("INSERT INTO tag (word) VALUES (?)", generatedColumns);
+                    preparedStatement.setString(1, tag.getWord());
+
+                    preparedStatement.executeUpdate();
+                    resultSet = preparedStatement.getGeneratedKeys();
+
+                    //cuvamo id novog taga
+                    if (resultSet.next()) {
+                        tagIds.add(resultSet.getInt(1));
+                    }
+                    //cuvamo id postojeceg taga
+                } else {
+                    resultSet = preparedStatement.getGeneratedKeys();
+                    if (resultSet.next()) {
+                        tagIds.add(resultSet.getInt(1));
+                    }
+                }
+            }
+
+            preparedStatement = connection.prepareStatement("INSERT INTO news (title, content, createdAt, category_name, author) VALUES(?, ?, ?, ?, ?)", generatedColumns);
+            preparedStatement.setString(1, news.getTitle());
+            preparedStatement.setString(2, news.getContent());
+            preparedStatement.setDate(3, java.sql.Date.valueOf(LocalDate.now()));
+            preparedStatement.setString(4, news.getCategory().getName());
+            preparedStatement.setString(5, news.getAuthor().getEmail());
+
+            preparedStatement.executeUpdate();
+            resultSet = preparedStatement.getGeneratedKeys();
+
+            if (resultSet.next()) {
+                //cuvamo id novog news-a
+                newsId = resultSet.getInt(1);
+                news.setId(newsId);
+            }
+
+            //many-many table
+            for (int idTag : tagIds) {
+                preparedStatement = connection.prepareStatement("INSERT INTO tag_news (id_news, id_tag) VALUES(?, ?)");
+                preparedStatement.setInt(1, newsId);
+                preparedStatement.setInt(2, idTag);
+
+                preparedStatement.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return news;
+    }
+
 }

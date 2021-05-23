@@ -18,4 +18,6 @@ public interface NewsRepository {
     public News findNews(Integer id);
 
     public Comment addComment(Comment comment, Integer id);
+
+    public News addNews(News news);
 }

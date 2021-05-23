@@ -33,7 +33,7 @@ public class NewsResource {
     @GET
     @Path("/category/{category}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<News> allTopVisitedNews(@PathParam("category") String category) {
+    public List<News> allNewsByCategory(@PathParam("category") String category) {
         return this.newsService.allNewsByCategory(category);
     }
 
@@ -54,8 +54,14 @@ public class NewsResource {
     @POST
     @Path("/{id}/comments")
     @Produces(MediaType.APPLICATION_JSON)
-    public Comment create(@Valid Comment comment, @PathParam("id") Integer id) {
+    public Comment createComment(@Valid Comment comment, @PathParam("id") Integer id) {
         return this.newsService.addComment(comment, id);
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public News createNews(@Valid News news) {
+        return this.newsService.addNews(news);
     }
 
 }

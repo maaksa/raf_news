@@ -38,4 +38,8 @@ public class NewsService {
         return this.newsRepository.addComment(comment, id);
     }
 
+    public News addNews(News news) {
+        return this.newsRepository.addNews(news);
+    }
+
 }
