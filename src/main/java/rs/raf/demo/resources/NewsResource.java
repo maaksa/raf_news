@@ -64,4 +64,12 @@ public class NewsResource {
         return this.newsService.addNews(news);
     }
 
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void deleteCategory(@PathParam("id") Integer id) {
+        this.newsService.deleteNews(id);
+    }
+
+
 }

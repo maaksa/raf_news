@@ -543,10 +543,7 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
                     }
                     //cuvamo id postojeceg taga
                 } else {
-                    resultSet = preparedStatement.getGeneratedKeys();
-                    if (resultSet.next()) {
-                        tagIds.add(resultSet.getInt(1));
-                    }
+                    tagIds.add(resultSet.getInt(1));
                 }
             }
 
@@ -584,6 +581,30 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         }
 
         return news;
+    }
+
+    @Override
+    public void deleteNews(Integer id) {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("DELETE FROM news where id = ?");
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeConnection(connection);
+        }
     }
 
 }

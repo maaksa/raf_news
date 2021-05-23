@@ -20,4 +20,7 @@ public interface NewsRepository {
     public Comment addComment(Comment comment, Integer id);
 
     public News addNews(News news);
+
+    public void deleteNews(Integer id);
+
 }

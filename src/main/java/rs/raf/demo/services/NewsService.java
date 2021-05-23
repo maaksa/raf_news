@@ -42,4 +42,8 @@ public class NewsService {
         return this.newsRepository.addNews(news);
     }
 
+    public void deleteNews(Integer id){
+        this.newsRepository.deleteNews(id);
+    }
+
 }
