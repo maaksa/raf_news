@@ -1,5 +1,6 @@
 package rs.raf.demo.resources;
 
+import rs.raf.demo.entities.Category;
 import rs.raf.demo.entities.User;
 import rs.raf.demo.services.UserService;
 
@@ -24,6 +25,13 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public User addUser(User user) {
         return this.userService.addUser(user);
+    }
+
+    @PUT
+    @Path("/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public User updateUser(User user, @PathParam("email") String email) {
+        return this.userService.updateUser(user, email);
     }
 
 }

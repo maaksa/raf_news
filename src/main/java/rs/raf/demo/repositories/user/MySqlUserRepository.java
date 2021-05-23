@@ -1,10 +1,12 @@
 package rs.raf.demo.repositories.user;
 
 import rs.raf.demo.entities.Category;
+import rs.raf.demo.entities.Tag;
 import rs.raf.demo.entities.User;
 import rs.raf.demo.repositories.MySqlAbstractRepository;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +84,41 @@ public class MySqlUserRepository extends MySqlAbstractRepository implements User
         } finally {
             this.closeStatement(preparedStatement);
             this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return user;
+    }
+
+    @Override
+    public User updateUser(User user, String email) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("update user set email = ?, name = ?, surname = ?, role = ?, password = ? where email = ?");
+            preparedStatement.setString(1, user.getEmail());
+            preparedStatement.setString(2, user.getName());
+            preparedStatement.setString(3, user.getSurname());
+            preparedStatement.setInt(4, user.getRole());
+            preparedStatement.setString(5, user.getHashedPassword());
+            preparedStatement.setString(6, email);
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (resultSet != null) {
+                this.closeResultSet(resultSet);
+            }
+            this.closeStatement(preparedStatement);
             this.closeConnection(connection);
         }
 

@@ -19,4 +19,8 @@ public class UserService {
         return this.userRepository.addUser(user);
     }
 
+    public User updateUser(User user, String email) {
+        return this.userRepository.updateUser(user, email);
+    }
+
 }

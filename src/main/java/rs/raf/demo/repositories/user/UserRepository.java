@@ -12,4 +12,6 @@ public interface UserRepository {
 
     public User addUser(User user);
 
+    public User updateUser(User user, String email);
+
 }
