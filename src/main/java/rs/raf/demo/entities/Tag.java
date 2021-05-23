@@ -19,6 +19,7 @@ public class Tag {
         this.word = word;
     }
 
+
     public Integer getId() {
         return id;
     }

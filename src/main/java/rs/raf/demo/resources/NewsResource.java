@@ -1,5 +1,6 @@
 package rs.raf.demo.resources;
 
+import rs.raf.demo.entities.Comment;
 import rs.raf.demo.entities.News;
 import rs.raf.demo.services.NewsService;
 
@@ -36,11 +37,25 @@ public class NewsResource {
         return this.newsService.allNewsByCategory(category);
     }
 
-//    @GET
-//    @Path("/{id}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public News find(@PathParam("id") Integer id) {
-//        return this.newsService.findNews(id);
-//    }
+    @GET
+    @Path("/tag/{tag}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<News> allNewsByTag(@PathParam("tag") String tag) {
+        return this.newsService.allNewsByTag(tag);
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public News find(@PathParam("id") Integer id) {
+        return this.newsService.findNews(id);
+    }
+
+    @POST
+    @Path("/{id}/comments")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Comment create(@Valid Comment comment, @PathParam("id") Integer id) {
+        return this.newsService.addComment(comment, id);
+    }
 
 }

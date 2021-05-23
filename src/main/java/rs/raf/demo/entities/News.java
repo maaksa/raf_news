@@ -3,6 +3,8 @@ package rs.raf.demo.entities;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class News {
 
@@ -24,6 +26,10 @@ public class News {
 
     private Category category;
 
+    private List<Comment> comments;
+
+    private List<Tag> tags;
+
     public News() {
     }
 
@@ -32,6 +38,24 @@ public class News {
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
+        this.comments = new CopyOnWriteArrayList<>();
+        this.tags = new CopyOnWriteArrayList<>();
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public Integer getId() {
@@ -92,5 +116,20 @@ public class News {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    @Override
+    public String toString() {
+        return "News{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", createdAt=" + createdAt +
+                ", visits_num=" + visits_num +
+                ", author=" + author +
+                ", category=" + category +
+                ", comments=" + comments +
+                ", tags=" + tags +
+                '}';
     }
 }

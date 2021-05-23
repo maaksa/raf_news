@@ -1,5 +1,6 @@
 package rs.raf.demo.services;
 
+import rs.raf.demo.entities.Comment;
 import rs.raf.demo.entities.News;
 import rs.raf.demo.repositories.news.NewsRepository;
 
@@ -20,12 +21,21 @@ public class NewsService {
         return this.newsRepository.allTopVisitedNews();
     }
 
+    public List<News> allNewsByTag(String tag) {
+        return this.newsRepository.allNewsByTag(tag);
+    }
+
+
     public List<News> allNewsByCategory(String category) {
         return this.newsRepository.allNewsByCategory(category);
     }
 
     public News findNews(Integer id) {
         return this.newsRepository.findNews(id);
+    }
+
+    public Comment addComment(Comment comment, Integer id) {
+        return this.newsRepository.addComment(comment, id);
     }
 
 }
