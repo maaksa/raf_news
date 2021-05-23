@@ -10,4 +10,6 @@ public interface UserRepository {
 
     public List<User> allUser();
 
+    public User addUser(User user);
+
 }

@@ -1,8 +1,6 @@
 package rs.raf.demo.resources;
 
-import rs.raf.demo.entities.Category;
 import rs.raf.demo.entities.User;
-import rs.raf.demo.services.CategoryService;
 import rs.raf.demo.services.UserService;
 
 import javax.inject.Inject;
@@ -20,6 +18,12 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<User> allUser() {
         return this.userService.allUser();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public User addUser(User user) {
+        return this.userService.addUser(user);
     }
 
 }

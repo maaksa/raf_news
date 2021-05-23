@@ -67,6 +67,7 @@ public class MySqlCategoryRepository extends MySqlAbstractRepository implements 
 
                 preparedStatement.executeUpdate();
                 resultSet = preparedStatement.getGeneratedKeys();
+
             } else
                 category = null;
 
