@@ -1,8 +1,6 @@
 package rs.raf.demo.repositories.category;
 
 import rs.raf.demo.entities.Category;
-import rs.raf.demo.entities.News;
-import rs.raf.demo.entities.User;
 import rs.raf.demo.repositories.MySqlAbstractRepository;
 
 import java.sql.*;
