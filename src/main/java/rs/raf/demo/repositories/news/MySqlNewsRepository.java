@@ -526,7 +526,7 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
 
             //dodajemo nove tagove
             for (Tag tag : news.getTags()) {
-                preparedStatement = connection.prepareStatement("select * from tag where word = ? ",  Statement.RETURN_GENERATED_KEYS);
+                preparedStatement = connection.prepareStatement("select * from tag where word = ? ", Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, tag.getWord());
                 resultSet = preparedStatement.executeQuery();
 
@@ -605,6 +605,77 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
             this.closeStatement(preparedStatement);
             this.closeConnection(connection);
         }
+    }
+
+    @Override
+    public News updateNews(News news, Integer id) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        ArrayList<Integer> tagIds = new ArrayList<>();
+        int newsId = 0;
+
+        try {
+            connection = this.newConnection();
+
+            String[] generatedColumns = {"id"};
+
+            //dodajemo nove tagove
+            for (Tag tag : news.getTags()) {
+                preparedStatement = connection.prepareStatement("select * from tag where word = ? ", Statement.RETURN_GENERATED_KEYS);
+                preparedStatement.setString(1, tag.getWord());
+                resultSet = preparedStatement.executeQuery();
+
+                if (!resultSet.next()) {
+                    preparedStatement = connection.prepareStatement("INSERT INTO tag (word) VALUES (?)", generatedColumns);
+                    preparedStatement.setString(1, tag.getWord());
+
+                    preparedStatement.executeUpdate();
+                    resultSet = preparedStatement.getGeneratedKeys();
+
+                    //cuvamo id novog taga
+                    if (resultSet.next()) {
+                        tagIds.add(resultSet.getInt(1));
+                    }
+                    //cuvamo id postojeceg taga
+                } else {
+                    tagIds.add(resultSet.getInt(1));
+                }
+            }
+
+            preparedStatement = connection.prepareStatement("update news set title = ?, content = ?, createdAt = ?, category_name = ?, author = ? where id = ?");
+            preparedStatement.setString(1, news.getTitle());
+            preparedStatement.setString(2, news.getContent());
+            preparedStatement.setDate(3, java.sql.Date.valueOf(LocalDate.now()));
+            preparedStatement.setString(4, news.getCategory().getName());
+            preparedStatement.setString(5, news.getAuthor().getEmail());
+            preparedStatement.setInt(6, id);
+
+            preparedStatement.executeUpdate();
+
+            //todo updae tagove
+//            for (int idTag : tagIds) {
+//                preparedStatement = connection.prepareStatement("update tag_news set id_news = ?, id_tag = ? where id_news = ?");
+//                preparedStatement.setInt(1, id);
+//                preparedStatement.setInt(2, idTag);
+//                preparedStatement.setInt(3, id);
+//            }
+
+            preparedStatement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (resultSet != null) {
+                this.closeResultSet(resultSet);
+            }
+            this.closeStatement(preparedStatement);
+            this.closeConnection(connection);
+        }
+
+        return news;
     }
 
 }

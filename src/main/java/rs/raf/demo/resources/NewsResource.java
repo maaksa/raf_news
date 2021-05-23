@@ -1,5 +1,6 @@
 package rs.raf.demo.resources;
 
+import rs.raf.demo.entities.Category;
 import rs.raf.demo.entities.Comment;
 import rs.raf.demo.entities.News;
 import rs.raf.demo.services.NewsService;
@@ -67,9 +68,15 @@ public class NewsResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void deleteCategory(@PathParam("id") Integer id) {
+    public void deleteNews(@PathParam("id") Integer id) {
         this.newsService.deleteNews(id);
     }
 
+    @PUT
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public News updateNews(News news, @PathParam("id") Integer id) {
+        return this.newsService.updateNews(news, id);
+    }
 
 }

@@ -46,4 +46,8 @@ public class NewsService {
         this.newsRepository.deleteNews(id);
     }
 
+    public News updateNews(News news, Integer id){
+        return this.newsRepository.updateNews(news, id);
+    }
+
 }

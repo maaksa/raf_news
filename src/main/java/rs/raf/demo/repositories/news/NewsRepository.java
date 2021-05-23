@@ -23,4 +23,6 @@ public interface NewsRepository {
 
     public void deleteNews(Integer id);
 
+    public News updateNews(News news, Integer id);
+
 }
