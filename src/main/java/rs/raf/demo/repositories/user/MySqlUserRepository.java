@@ -1,13 +1,13 @@
 package rs.raf.demo.repositories.user;
 
-import rs.raf.demo.entities.Category;
-import rs.raf.demo.entities.Tag;
-import rs.raf.demo.entities.User;
+import org.apache.commons.codec.digest.DigestUtils;
+import rs.raf.demo.entities.*;
 import rs.raf.demo.repositories.MySqlAbstractRepository;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MySqlUserRepository extends MySqlAbstractRepository implements UserRepository {
@@ -71,7 +71,7 @@ public class MySqlUserRepository extends MySqlAbstractRepository implements User
                 preparedStatement.setString(2, user.getName());
                 preparedStatement.setString(3, user.getSurname());
                 preparedStatement.setInt(4, user.getRole());
-                preparedStatement.setString(5, user.getHashedPassword());
+                preparedStatement.setString(5, DigestUtils.sha256Hex(user.getHashedPassword()));
 
                 preparedStatement.executeUpdate();
                 resultSet = preparedStatement.getGeneratedKeys();
@@ -171,6 +171,49 @@ public class MySqlUserRepository extends MySqlAbstractRepository implements User
             this.closeConnection(connection);
         }
 
+    }
+
+    @Override
+    public User findUser(String username) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        User user = null;
+
+        try {
+            connection = this.newConnection();
+
+            //get user by username
+            preparedStatement = connection.prepareStatement("SELECT * FROM user where email like ?");
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+
+            //USER
+            if (resultSet.next()) {
+                String email = resultSet.getString("email");
+                String name = resultSet.getString("name");
+                String surname = resultSet.getString("surname");
+                int role = resultSet.getInt("role");
+                int status = resultSet.getInt("status");
+                String hesPassword = resultSet.getString("password");
+
+                user = new User(email, name, surname, role, status, hesPassword);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return user;
     }
 
 
