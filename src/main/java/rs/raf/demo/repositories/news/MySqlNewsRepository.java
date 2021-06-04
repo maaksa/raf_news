@@ -25,11 +25,11 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
         PreparedStatement preparedStatement = null;
 
         try {
-            int currPage = (pageNum - 1) * 1;
+            int currPage = (pageNum - 1) * 4;
             connection = this.newConnection();
 
             // statement = connection.createStatement();
-            preparedStatement = connection.prepareStatement("select * from news order by createdAt desc limit ?,1");
+            preparedStatement = connection.prepareStatement("select * from news order by createdAt desc limit ?,4");
             preparedStatement.setInt(1, currPage);
             resultSet = preparedStatement.executeQuery();
             //resultSet = statement.executeQuery("select * from news order by createdAt desc limit ?,2"); //prvi kec je koliko ce da preskoci, drugi kec koliko ce da prikaze posle preskakanja
@@ -119,7 +119,7 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
             connection = this.newConnection();
 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from news order by visits_num desc");
+            resultSet = statement.executeQuery("select * from news where createdAt between NOW() - interval 30 day and NOW() order by visits_num desc");
 
             //NEWS
             while (resultSet.next()) {
@@ -385,8 +385,21 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
                 String title = resultSet.getString("title");
                 String content = resultSet.getString("content");
                 Date createdAt = resultSet.getDate("createdAt");
+                int currVisits = resultSet.getInt("visits_num");
 
                 news = new News(id, title, content, createdAt);
+
+                currVisits += 1;
+
+                //todo visits number
+                news.setVisits_num(currVisits);
+
+                System.out.println(currVisits);
+
+                preparedStatement = connection.prepareStatement("update news set visits_num = ? where id = ?");
+                preparedStatement.setInt(1, currVisits);
+                preparedStatement.setInt(2, id);
+                preparedStatement.executeUpdate();
 
                 //get comments related to news
                 preparedStatement = connection.prepareStatement("select * from comment where news = ? order by createdAt desc");

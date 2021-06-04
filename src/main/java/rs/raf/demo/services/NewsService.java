@@ -25,7 +25,6 @@ public class NewsService {
         return this.newsRepository.allNewsByTag(tag);
     }
 
-
     public List<News> allNewsByCategory(String category) {
         return this.newsRepository.allNewsByCategory(category);
     }
