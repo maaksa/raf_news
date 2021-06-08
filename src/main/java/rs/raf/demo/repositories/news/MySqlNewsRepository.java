@@ -391,7 +391,6 @@ public class MySqlNewsRepository extends MySqlAbstractRepository implements News
 
                 currVisits += 1;
 
-                //todo visits number
                 news.setVisits_num(currVisits);
 
                 System.out.println(currVisits);

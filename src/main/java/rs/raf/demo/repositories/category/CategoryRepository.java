@@ -8,6 +8,8 @@ public interface CategoryRepository {
 
     public List<Category> allCategory();
 
+    public Category findCategory(String name);
+
     public Category addCategory(Category category);
 
     public String deleteCategory(String name);

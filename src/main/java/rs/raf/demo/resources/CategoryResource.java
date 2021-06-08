@@ -20,6 +20,13 @@ public class CategoryResource {
         return this.categoryService.allCategory();
     }
 
+    @GET
+    @Path("/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Category findCategory(@PathParam("name") String name) {
+        return this.categoryService.findCategory(name);
+    }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Category addCategory(Category category) {

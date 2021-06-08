@@ -15,6 +15,10 @@ public class CategoryService {
         return this.categoryRepository.allCategory();
     }
 
+    public Category findCategory(String name) {
+        return this.categoryRepository.findCategory(name);
+    }
+
     public Category addCategory(Category category) {
         return this.categoryRepository.addCategory(category);
     }

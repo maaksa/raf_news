@@ -1,6 +1,7 @@
 package rs.raf.demo.repositories.category;
 
 import rs.raf.demo.entities.Category;
+import rs.raf.demo.entities.User;
 import rs.raf.demo.repositories.MySqlAbstractRepository;
 
 import java.sql.*;
@@ -42,6 +43,45 @@ public class MySqlCategoryRepository extends MySqlAbstractRepository implements 
         }
 
         return categoryList;
+    }
+
+    @Override
+    public Category findCategory(String name) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        Category category = null;
+
+        try {
+            connection = this.newConnection();
+
+            //get user by username
+            preparedStatement = connection.prepareStatement("SELECT * FROM category where name like ?");
+            preparedStatement.setString(1, name);
+            resultSet = preparedStatement.executeQuery();
+
+            //USER
+            if (resultSet.next()) {
+                String name1 = resultSet.getString("name");
+                String description = resultSet.getString("description");
+
+                category = new Category(name1, description);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return category;
     }
 
     @Override
